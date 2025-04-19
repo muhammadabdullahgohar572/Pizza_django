@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.models import User
-from django.contrib.auth import login, authenticate
-from .models import Pizza,Cart,PizzaCategory,CartItems
-
+from django.contrib.auth import login, authenticate,logout
+from .models import Pizza,Cart,PizzaCategory,CartItems,OrderDetails
+from django.contrib.auth import logout as auth_logout
 def home(request):
     pizzas = Pizza.objects.all()
     return render(request, 'home.html', {'pizzas': pizzas})
@@ -83,3 +83,63 @@ def add_cart(request, pizza_uid):
         Pizza=pizza_obj
     )
     return redirect('home')
+
+def custom_logout(request):
+    auth_logout(request)
+    return redirect("home")
+
+
+def cart(request):
+    try:
+        cart = Cart.objects.get(is_paid=False, user=request.user)
+        return render(request, "Cart.html", {"carts": cart})
+    except Cart.DoesNotExist:
+        return render(request, "Cart.html", {"carts": None})
+    
+def remove_item(request, item_uid):
+    try:
+        item = CartItems.objects.get(uid=item_uid, cart__user=request.user)
+        item.delete()
+        messages.success(request, "Item removed from cart")
+    except CartItems.DoesNotExist:
+        messages.error(request, "Item not found in your cart")
+    return redirect('cart')    
+
+
+
+def Oder(request):
+    Orders = Cart.objects.filter(is_paid=True, user=request.user).order_by('-created_at')
+    return render(request, "Order.html", {"Oders": Orders})
+
+
+
+def checkout(request):
+    try:
+        cart = Cart.objects.get(is_paid=False, user=request.user)
+        if request.method == "POST":
+            # Process the order
+            full_name = request.POST.get('full_name')
+            address = request.POST.get('address')
+            phone = request.POST.get('phone')
+            payment_method = request.POST.get('payment_method')
+            
+            # Create order details
+            OrderDetails.objects.create(
+                cart=cart,
+                full_name=full_name,
+                address=address,
+                phone=phone,
+                payment_method=payment_method
+            )
+            
+            # Mark cart as paid
+            cart.is_paid = True
+            cart.save()
+            
+            messages.success(request, "Order placed successfully!")
+            return redirect('Order')
+            
+        return render(request, "checkout.html", {"cart": cart})
+    except Cart.DoesNotExist:
+        messages.error(request, "No active cart found")
+        return redirect('home')

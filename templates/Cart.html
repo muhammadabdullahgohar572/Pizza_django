@@ -1,0 +1,51 @@
+{% extends "Base.html" %}
+
+{% block "start" %}
+<div class="container mt-4">
+    <h2 class="mb-4">Your Cart Items</h2>
+    
+    {% if carts and carts.carts_items.all %}
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Pizza Image</th>
+                    <th>Pizza Name</th>
+                    <th>Price</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cartitem in carts.carts_items.all %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>
+                        {% if cartitem.Pizza.images %}
+                        <img src="{{ cartitem.Pizza.images.url }}" class="img-thumbnail" style="height: 80px; width: 80px; object-fit: cover;" alt="{{ cartitem.Pizza.Pizza_name }}">
+                        {% endif %}
+                    </td>
+                    <td>{{ cartitem.Pizza.Pizza_name }}</td>
+                    <td>Rs {{ cartitem.Pizza.price }}</td>
+                    <td>
+                        <a href="{% url 'remove_item' cartitem.uid %}" class="btn btn-danger btn-sm">Remove</a>
+                    </td>
+                </tr>
+                {% endfor %}
+                <tr class="table-active">
+                    <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                    <td><strong>Rs {{ carts.get_cart_total }}</strong></td>
+                    <td>
+                        <a href="{% url 'checkout' %}" class="btn btn-success">Checkout</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        Your cart is empty. <a href="{% url 'home' %}" class="alert-link">Continue shopping</a>.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

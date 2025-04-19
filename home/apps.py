@@ -10,6 +10,4 @@ class HomeConfig(AppConfig):
         
         def get_cart_count(user):
             return CartItems.objects.filter(cart__is_paid=False, cart__user=user).count()
-        
-      
-            User.add_to_class("get_cart_count", get_cart_count)
+        User.add_to_class("get_cart_count", get_cart_count)

@@ -200,7 +200,7 @@
                     {% if user.is_authenticated %}
                     <!-- Authenticated user menu -->
                     <li class="nav-item">
-                        <a class="nav-btn btn-logout btn-pulse" href="#">
+                        <a class="nav-btn btn-logout btn-pulse" href="{% url 'logout' %}">
                             <i class="fas fa-sign-out-alt"></i>Logout
                         </a>
                     </li>
@@ -211,9 +211,10 @@
                     </li>
 
                     <li class="nav-item">
+                        <a href="{% url 'Order' %}">
                         <span class="username-display">
                             <i class="fa-solid fa-face-smile" style="color: #9e5c00;"></i>Dashboard
-                        </span>
+                        </span></a>
                     </li>
 
                     {% else %}
@@ -233,8 +234,8 @@
                     
                     <!-- Add Car Button (visible to all) -->
                     <li class="nav-item ms-lg-3">
-                        <a class="nav-btn btn-add-car btn-pulse" href="#">
-                            <i class="fa-solid fa-cart-shopping"></i>
+                        <a class="nav-btn btn-add-car btn-pulse" href="{% url 'cart' %}">
+                            <i class="fa-solid fa-cart-shopping"></i>{{user.get_cart_count}}
                         </a>
                     </li>
                 </ul>

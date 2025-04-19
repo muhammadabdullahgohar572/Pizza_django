@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate
-from .models import Pizza
+from .models import Pizza,Cart,PizzaCategory,CartItems
 
 def home(request):
     pizzas = Pizza.objects.all()
@@ -75,5 +75,11 @@ def register_page(request):
     return render(request, "register.html")
 
 def add_cart(request, pizza_uid):
-    # Add your cart logic here
+    user=request.user;
+    pizza_obj=Pizza.objects.get(uid=pizza_uid);
+    cart,_=Cart.objects.get_or_create(user=user,is_paid=False)
+    cart_Items=CartItems.objects.create(
+        cart=cart,
+        Pizza=pizza_obj
+    )
     return redirect('home')

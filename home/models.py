@@ -20,12 +20,12 @@ class Pizza(BaseModel):
     price=models.IntegerField(default=100)
     images=CloudinaryField('images')
     
-class cart(BaseModel):
+class Cart(BaseModel):
     user=models.ForeignKey(User,null=True ,blank=True, on_delete=models.SET_NULL,related_name='carts');
     is_paid=models.BooleanField(default=False)
     
 class CartItems(BaseModel):    
-    cart=models.ForeignKey(cart,on_delete=models.CASCADE,related_name='carts_items');
+    cart=models.ForeignKey(Cart,on_delete=models.CASCADE,related_name='carts_items');
     Pizza=models.ForeignKey(Pizza,on_delete=models.CASCADE);
     
    
